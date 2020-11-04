@@ -128,7 +128,7 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
     _codeVerifier = [codeVerifier copy];
     _additionalParameters =
         [[NSDictionary alloc] initWithDictionary:additionalParameters copyItems:YES];
-    
+
     // Additional validation for the authorization_code grant type
     if ([_grantType isEqual:OIDGrantTypeAuthorizationCode]) {
       // redirect URI must not be nil
@@ -177,7 +177,7 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
   NSDictionary *additionalParameters =
       [aDecoder decodeObjectOfClasses:additionalParameterCodingClasses
                                forKey:kAdditionalParametersKey];
-  
+
   self = [super init];
   if (self) {
     _configuration = [configuration copy];
@@ -280,12 +280,12 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
   NSMutableDictionary *httpHeaders = [[NSMutableDictionary alloc] init];
 
   if (_clientSecret) {
-    // The client id and secret are encoded using the "application/x-www-form-urlencoded" 
+    // The client id and secret are encoded using the "application/x-www-form-urlencoded"
     // encoding algorithm per RFC 6749 Section 2.3.1.
     // https://tools.ietf.org/html/rfc6749#section-2.3.1
     NSString *encodedClientID = [OIDTokenUtilities formUrlEncode:_clientID];
     NSString *encodedClientSecret = [OIDTokenUtilities formUrlEncode:_clientSecret];
-    
+
     NSString *credentials =
         [NSString stringWithFormat:@"%@:%@", encodedClientID, encodedClientSecret];
     NSData *plainData = [credentials dataUsingEncoding:NSUTF8StringEncoding];
@@ -301,6 +301,10 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
   NSString *bodyString = [bodyParameters URLEncodedParameters];
   NSData *body = [bodyString dataUsingEncoding:NSUTF8StringEncoding];
   URLRequest.HTTPBody = body;
+
+  // Daniel Maragno changes
+  static NSString *const kHTTPAcceptHeaderValue = @"application/json";
+  [httpHeaders setValue:kHTTPAcceptHeaderValue forKey:@"Accept"];
 
   for (id header in httpHeaders) {
     [URLRequest setValue:httpHeaders[header] forHTTPHeaderField:header];
